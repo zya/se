@@ -29,10 +29,10 @@ function setup() {
 	controls.minPolarAngle = 1.2;
 	controls.noPan = true;
 	controls.autoRotate = true;
-	controls.autoRotateSpeed = 0.3;
+	controls.autoRotateSpeed = 0.2;
 	controls.zoomSpeed = 0.2;
 
-	geometry = new THREE.PlaneBufferGeometry(200,200,100,100);
+	geometry = new THREE.PlaneBufferGeometry(200,200,70,70);
 	geometry.computeTangents();
 
 	var manager = new THREE.LoadingManager();
@@ -86,6 +86,7 @@ function setupListeners(){
 
 function draw() {
 	uniforms[ "uDisplacementPostScale" ].value = scale;
+	controls.update();
 	renderer.render(scene, camera);
 	requestAnimationFrame(draw);
 }
