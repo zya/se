@@ -22,7 +22,7 @@ var ambient = 0x000000,
 	diffuse = 0x000000, 
 	specular = 0x000000, 
 	shininess = 0.0,
-	scale = 50;
+	scale = 80;
 var uniforms;
 var vs, fs;
 
@@ -50,8 +50,8 @@ function setup() {
 	controls.noKeys = true;
 	controls.maxPolarAngle = 2.2;
 	controls.minPolarAngle = 0.8;
-	controls.maxAzimuthAngle = 1.3;
-	controls.minAzimuthAngle = -1.3;
+	controls.maxAzimuthAngle = 1.8;
+	controls.minAzimuthAngle = -1.8;
 	controls.noPan = true;
 	controls.autoRotate = true;
 	controls.autoRotateSpeed = 0.25;
@@ -59,7 +59,7 @@ function setup() {
 	controls.rotateUp(-0.2);
 	controls.rotateLeft(-0.2);
 
-	geometry = new THREE.PlaneBufferGeometry(200,200,100,100);
+	geometry = new THREE.PlaneBufferGeometry(200,200,90,90);
     geometry.dynamic = true;
 	geometry.computeTangents();
 
@@ -143,9 +143,10 @@ function updateVertices(){
         }
         var average = sum/frequencyData.length;
         if( average > 20) {
-            scale = average + 50;
+            scale = average + 80;
         }
         geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+
     }
 }
 //--------------------- event listeners ----------------------//
