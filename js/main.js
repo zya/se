@@ -86,7 +86,7 @@ function setup() {
         });
     });
 
-	texture = new THREE.ImageUtils.loadTexture('images/1.png');
+	texture = new THREE.ImageUtils.loadTexture('images/3.png');
 
 	var shader = THREE.ShaderLib.normalmap;
 	uniforms = THREE.UniformsUtils.clone(shader.uniforms);
