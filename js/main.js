@@ -13,9 +13,12 @@ filter.connect(analyser);
 audiosource.connect(context.destination);
 var frequencyData = new Uint8Array(analyser.fftSize);
 var isloaded = false;
+
+//audio files
+var audioElements = [];
 //--------------------- three global vars ----------------------//
 var renderer, scene, camera, controls;
-var mesh, geometry, material, texture;
+var mesh = new THREE.Mesh(), geometry, material, texture;
 var vertices =[], originalvertices = [];
 var offset1, offset2, offset3;
 var ambient = 0x000000, 
@@ -50,19 +53,18 @@ function setup() {
 	controls.noKeys = true;
 	controls.maxPolarAngle = 2.2;
 	controls.minPolarAngle = 0.8;
-	controls.maxAzimuthAngle = 1.8;
-	controls.minAzimuthAngle = -1.8;
+	controls.maxAzimuthAngle = 1.2;
+	controls.minAzimuthAngle = -1.2;
 	controls.noPan = true;
-	controls.autoRotate = true;
+	controls.autoRotate = false;
 	controls.autoRotateSpeed = 0.25;
-	controls.zoomSpeed = 0.2;
+	controls.zoomSpeed = 0.15;
 	controls.rotateUp(-0.2);
 	controls.rotateLeft(-0.2);
 
 	geometry = new THREE.PlaneBufferGeometry(200,200,90,90);
     geometry.dynamic = true;
 	geometry.computeTangents();
-
 
 	var manager = new THREE.LoadingManager();
 	var loader = new THREE.XHRLoader(manager);
@@ -129,6 +131,12 @@ function analyseAudio(){
 	analyser.getByteFrequencyData(frequencyData);
 }
 
+function autoRotate(){
+    var time = Date.now();
+    var value = Math.sin(time * 0.00009) * 0.4;
+    mesh.rotation.y = value;
+}
+
 function updateVertices(){
 
 	if(isloaded) {
@@ -136,7 +144,7 @@ function updateVertices(){
         for(var i = 0; i < frequencyData.length; i++){
             sum += frequencyData[i];
             var index = Math.ceil(map(i, 0, frequencyData.length, 0, vertices.length));
-            var value = map(frequencyData[i], 0, 256, 1, 1.2);
+            var value = map(frequencyData[i], 0, 256, 1, 1.3);
             vertices[index + offset1] = originalvertices[index + offset1] * value;
             vertices[index + offset2] = originalvertices[index + offset2] * value;
             vertices[index + offset3] = originalvertices[index + offset3] * value;
@@ -158,11 +166,32 @@ function setupListeners(){
 	}, false);
 }
 
+function loadAudio(){
+    var id = '?client_id=c625af85886c1a833e8fe3d740af753c'
+    var iter = 0;
+    var senoghte = new Audio();
+    senoghte.src = 'https://api.soundcloud.com/tracks/182234545/stream' + id;
+    var sedandeh = new Audio();
+    sedandeh.src = 'https://api.soundcloud.com/tracks/182234545/stream' + id;
+    var saboon = new Audio();
+    saboon.src = 'https://api.soundcloud.com/tracks/182234545/stream' + id;
+    audioElements.push(senoghte, sedandeh, saboon);
+    for(var i in audioElements){
+        audioElements[i].addEventListener('canplaythrough', function(){
+            iter++
+            if(iter === 3){
+                console.log('Audio Files Are Loaded');
+            }
+        });
+    }
+}
+
 //--------------------- draw ----------------------//
 function draw() {
 	analyseAudio();
 	updateVertices();
 	controls.update();
+    autoRotate();
 	uniforms[ "uDisplacementPostScale" ].value = scale;
 	renderer.render(scene, camera);
 	requestAnimationFrame(draw);
@@ -171,5 +200,6 @@ function draw() {
 window.onload = function() {
 	setup();
 	setupListeners();
+    loadAudio();
 	draw();
 };
