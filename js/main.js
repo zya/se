@@ -2,16 +2,16 @@
 window.AudioContext = (window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext);
 var context = new AudioContext();
 var analyser = context.createAnalyser();
-analyser.fftSize = 1024;
+analyser.fftSize = 2048;
 analyser.smoothingTimeConstant = 0.7;
 var filter = context.createBiquadFilter();
 filter.type = 'highpass';
-filter.frequency.value = 4000;
+filter.frequency.value = 5000;
 var audiosource = context.createBufferSource();
 audiosource.connect(filter);
 filter.connect(analyser);
 audiosource.connect(context.destination);
-var frequencyData = new Uint8Array(analyser.fftSize);
+var frequencyData = new Uint8Array(analyser.frequencyBinCount);
 var isloaded = false;
 
 //audio files
@@ -102,7 +102,7 @@ function setup() {
     uniforms[ "specular" ].value = new THREE.Color( specular );
     uniforms[ "ambient" ].value = new THREE.Color( ambient );
     uniforms[ "shininess" ].value = shininess;
-	
+
 	manager.onLoad = function(){
 		material = new THREE.ShaderMaterial({
             uniforms: uniforms,
@@ -119,7 +119,7 @@ function setup() {
         }
 
         offset1 = Math.ceil(vertices.length / 8);
-        offset2 = Math.ceil(vertices.length / 1.5);
+        offset2 = Math.ceil(vertices.length / 1.9);
         offset3 = Math.ceil(vertices.length / 2.5);
 
         isloaded = true;
@@ -145,8 +145,8 @@ function updateVertices(){
             sum += frequencyData[i];
             var index = Math.ceil(map(i, 0, frequencyData.length, 0, vertices.length));
             var value = map(frequencyData[i], 0, 256, 1, 1.3);
-            vertices[index + offset1] = originalvertices[index + offset1] * value;
-            vertices[index + offset2] = originalvertices[index + offset2] * value;
+            vertices[index + offset1 + 200] = originalvertices[index + offset1 + 200] * value;
+            vertices[index + offset2 + 200] = originalvertices[index + offset2 + 200] * value;
             vertices[index + offset3] = originalvertices[index + offset3] * value;
         }
         var average = sum/frequencyData.length;
@@ -180,7 +180,7 @@ function loadAudio(){
         audioElements[i].addEventListener('canplaythrough', function(){
             iter++
             if(iter === 3){
-                console.log('Audio Files Are Loaded');
+                console.log('Audio Files Can Play Through');
             }
         });
     }
