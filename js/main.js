@@ -25,9 +25,10 @@ var ambient = 0x000000,
 	diffuse = 0x000000, 
 	specular = 0x000000, 
 	shininess = 0.0,
-	scale = 40;
+	scale = 50;
 var uniforms;
 var vs, fs;
+var texture1, texture2, texture3, texture4;
 
 //--------------------- helper methods ----------------------//
 var map = function(value, istart, istop, ostart, ostop) {
@@ -89,15 +90,16 @@ function setup() {
         });
     });
 
-	texture = new THREE.ImageUtils.loadTexture('images/3.png');
+	texture1 = new THREE.ImageUtils.loadTexture('images/3.png');
+    texture2 = new THREE.ImageUtils.loadTexture('images/1.png');
 
 	var shader = THREE.ShaderLib.normalmap;
 	uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 	uniforms[ "enableDisplacement" ].value = true;
     uniforms[ "enableDiffuse" ].value = 0;
-    uniforms[ "tDiffuse" ].value = texture;
+    uniforms[ "tDiffuse" ].value = texture1;
     uniforms[ "tDiffuseOpacity" ] = { type: 'f', value: 1.0 };
-    uniforms[ "tDisplacement" ] = { type: 't', value: texture};
+    uniforms[ "tDisplacement" ] = { type: 't', value: texture1};
     uniforms[ "uDisplacementScale" ].value = 100;
     uniforms[ "ambientLightColor" ].value = new THREE.Color( ambient );
     uniforms[ "uDisplacementPostScale" ] = {type: 'f', value: scale };
@@ -154,11 +156,16 @@ function updateVertices(){
         }
         var average = sum/frequencyData.length;
         if( average > 20) {
-            scale = average + 20;
+            scale = average + 50;
         }
         geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
 
     }
+}
+
+function change(texture){
+    uniforms.tDisplacement.value = texture;
+    uniforms.tDiffuse.value = texture;
 }
 
 function screenshot(){
