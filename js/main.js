@@ -47,11 +47,11 @@ function setup() {
     });
     renderer.setClearColor(new THREE.Color('black'), 1);
     var s = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
-    renderer.setSize(s, s);
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-	scene = new THREE.Scene();
+    scene = new THREE.Scene();
 
-	camera = new THREE.PerspectiveCamera(45, s / s, 0.01, 1000);
+	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
 	camera.position.z = 400;
 
 	controls = new THREE.OrbitControls(camera);
@@ -161,7 +161,7 @@ function updateVertices(){
         }
         var average = sum/frequencyData.length;
         if( average > 20) {
-            scale = average + 60;
+            scale = average + 20;
         }
         geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
 
@@ -189,8 +189,8 @@ function setupListeners(){
 
     window.addEventListener('resize', function(){
         s = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
-		renderer.setSize( s, s);
-		camera.aspect	= s/ s;
+		renderer.setSize( window.innerWidth, window.innerHeight);
+		camera.aspect	= window.innerWidth /  window.innerHeight;
 		camera.updateProjectionMatrix();	
 	}, false);
 
