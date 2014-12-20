@@ -25,7 +25,7 @@ var ambient = 0x000000,
 	diffuse = 0x000000, 
 	specular = 0x000000, 
 	shininess = 0.0,
-	scale = 80;
+	scale = 40;
 var uniforms;
 var vs, fs;
 
@@ -39,12 +39,15 @@ function setup() {
 		antialias: true
 	});
 	renderer.setClearColor(new THREE.Color('black'), 1);
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	document.body.appendChild(renderer.domElement);
-	
+	renderer.setSize(window.innerHeight, window.innerHeight);
+    var canvas = document.createElement('canvas');
+    canvas.id = 'main';
+    document.body.appendChild(renderer.domElement);
+    renderer.canvas = canvas;
+
 	scene = new THREE.Scene();
 
-	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+	camera = new THREE.PerspectiveCamera(45, window.innerHeight / window.innerHeight, 0.01, 1000);
 	camera.position.z = 400;
 
 	controls = new THREE.OrbitControls(camera);
@@ -53,8 +56,8 @@ function setup() {
 	controls.noKeys = true;
 	controls.maxPolarAngle = 2.2;
 	controls.minPolarAngle = 0.8;
-	controls.maxAzimuthAngle = 1.2;
-	controls.minAzimuthAngle = -1.2;
+	controls.maxAzimuthAngle = 0.9;
+	controls.minAzimuthAngle = -0.9;
 	controls.noPan = true;
 	controls.autoRotate = false;
 	controls.autoRotateSpeed = 0.25;
@@ -151,16 +154,30 @@ function updateVertices(){
         }
         var average = sum/frequencyData.length;
         if( average > 20) {
-            scale = average + 80;
+            scale = average + 20;
         }
         geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
 
     }
 }
+
+function screenshot(){
+    var link = document.getElementById('screen');
+    renderer.render(scene, camera);
+    var img = renderer.domElement.toDataURL("se.png");
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    link.href = img;
+    link.download = 'se.png';
+    link.click();
+}
 //--------------------- event listeners ----------------------//
 function setupListeners(){
-	window.addEventListener('resize', function(){
-		renderer.setSize( window.innerWidth, window.innerHeight );
+    var link = document.createElement('a');
+    link.id = "screen";
+    document.body.appendChild(link);
+
+    window.addEventListener('resize', function(){
+		renderer.setSize( window.innerWidth, window.innerHeight);
 		camera.aspect	= window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();	
 	}, false);
@@ -193,7 +210,7 @@ function draw() {
 	controls.update();
     autoRotate();
 	uniforms[ "uDisplacementPostScale" ].value = scale;
-	renderer.render(scene, camera);
+    renderer.render(scene, camera);
 	requestAnimationFrame(draw);
 }
 
