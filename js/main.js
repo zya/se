@@ -25,7 +25,7 @@ var ambient = 0x000000,
 	diffuse = 0x000000, 
 	specular = 0x000000, 
 	shininess = 0.0,
-	scale = 50;
+	scale = 60;
 var uniforms;
 var vs, fs;
 var texture1, texture2, texture3, texture4;
@@ -46,11 +46,12 @@ function setup() {
         antialias: true
     });
     renderer.setClearColor(new THREE.Color('black'), 1);
-    renderer.setSize(window.innerHeight, window.innerHeight);
+    var s = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
+    renderer.setSize(s, s);
 
 	scene = new THREE.Scene();
 
-	camera = new THREE.PerspectiveCamera(45, window.innerHeight / window.innerHeight, 0.01, 1000);
+	camera = new THREE.PerspectiveCamera(45, s / s, 0.01, 1000);
 	camera.position.z = 400;
 
 	controls = new THREE.OrbitControls(camera);
@@ -92,10 +93,12 @@ function setup() {
         });
     });
 
-	texture1 = new THREE.ImageUtils.loadTexture('images/3.png');
-    texture2 = new THREE.ImageUtils.loadTexture('images/1.png');
+	texture1 = new THREE.ImageUtils.loadTexture('images/32.png');
+    texture2 = new THREE.ImageUtils.loadTexture('images/senoghte.png');
+    texture3 = new THREE.ImageUtils.loadTexture('images/sedand.png');
+    texture4 = new THREE.ImageUtils.loadTexture('images/saboon.png');
 
-	var shader = THREE.ShaderLib.normalmap;
+    var shader = THREE.ShaderLib.normalmap;
 	uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 	uniforms[ "enableDisplacement" ].value = true;
     uniforms[ "enableDiffuse" ].value = 0;
@@ -158,7 +161,7 @@ function updateVertices(){
         }
         var average = sum/frequencyData.length;
         if( average > 20) {
-            scale = average + 50;
+            scale = average + 60;
         }
         geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
 
@@ -174,7 +177,6 @@ function screenshot(){
     var link = document.getElementById('screen');
     renderer.render(scene, camera);
     var img = renderer.domElement.toDataURL("se.png");
-    renderer.setSize(window.innerWidth,window.innerHeight);
     link.href = img;
     link.download = 'se.png';
     link.click();
@@ -186,14 +188,15 @@ function setupListeners(){
     document.body.appendChild(link);
 
     window.addEventListener('resize', function(){
-		renderer.setSize( window.innerWidth, window.innerHeight);
-		camera.aspect	= window.innerWidth / window.innerHeight;
+        s = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
+		renderer.setSize( s, s);
+		camera.aspect	= s/ s;
 		camera.updateProjectionMatrix();	
 	}, false);
 
-    document.getElementById('main').addEventListener('click', function(){
-        change(texture2);
-    }, false);
+//    document.getElementById('main').addEventListener('click', function(){
+//        change(texture2);
+//    }, false);
 }
 
 function loadAudio(){
