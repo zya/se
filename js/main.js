@@ -29,6 +29,7 @@ var ambient = 0x000000,
 var uniforms;
 var vs, fs;
 var texture1, texture2, texture3, texture4;
+var canvas;
 
 //--------------------- helper methods ----------------------//
 var map = function(value, istart, istop, ostart, ostop) {
@@ -36,15 +37,16 @@ var map = function(value, istart, istop, ostart, ostop) {
 };
 //--------------------- setup ----------------------//
 function setup() {
-	renderer = new THREE.WebGLRenderer({
-		antialias: true
-	});
-	renderer.setClearColor(new THREE.Color('black'), 1);
-	renderer.setSize(window.innerHeight, window.innerHeight);
+
     var canvas = document.createElement('canvas');
-    canvas.id = 'main';
-    document.body.appendChild(renderer.domElement);
-    renderer.canvas = canvas;
+    canvas.setAttribute('id', 'main');
+    document.body.appendChild(canvas);
+    renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        antialias: true
+    });
+    renderer.setClearColor(new THREE.Color('black'), 1);
+    renderer.setSize(window.innerHeight, window.innerHeight);
 
 	scene = new THREE.Scene();
 
@@ -188,6 +190,10 @@ function setupListeners(){
 		camera.aspect	= window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();	
 	}, false);
+
+    document.getElementById('main').addEventListener('click', function(){
+        change(texture2);
+    }, false);
 }
 
 function loadAudio(){
