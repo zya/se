@@ -32,6 +32,8 @@ var vs, fs;
 var texture1, texture2, texture3, texture4;
 var canvas;
 var previous = 0;
+var beat = 0;
+var threshold = 60;
 
 //--------------------- helper methods ----------------------//
 var map = function(value, istart, istop, ostart, ostop) {
@@ -44,6 +46,7 @@ function setup() {
     canvas.setAttribute('id', 'main');
     document.body.appendChild(canvas);
     renderer = new THREE.WebGLRenderer({
+        preserveDrawingBuffer: true,
         canvas: canvas,
         antialias: true
     });
@@ -163,8 +166,21 @@ function updateVertices(){
             vertices[index + offset3] = originalvertices[index + offset3] * value;
         }
         var average = sum/frequencyData.length;
+        beat++;
         if( average > 20) {
             scale = average + 20;
+            if(beat % 110 === 0){
+                changeRandomTexture();
+                if(scale > 50){
+                    renderer.autoClear = false;
+                    setTimeout(function(){
+                        renderer.autoClear = true;
+                    },1200);
+                }
+            }
+            if(scale > threshold){
+                beat++;
+            }
         }
         geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
 
@@ -197,12 +213,13 @@ function setupListeners(){
 		camera.updateProjectionMatrix();	
 	}, false);
 
-    document.getElementById('main').addEventListener('dblclick', function(){
-        var random = generateRandom(previous);
-        console.log(random);
-        previous = random;
-        change(textures[random]);
-    }, false);
+    document.getElementById('main').addEventListener('dblclick',changeRandomTexture, false);
+}
+
+function changeRandomTexture(){
+    var random = generateRandom(previous);
+    previous = random;
+    change(textures[random]);
 }
 
 function generateRandom(prev){
