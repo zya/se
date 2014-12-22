@@ -20,6 +20,7 @@ var audioElements = [];
 var renderer, scene, camera, controls;
 var mesh = new THREE.Mesh(), geometry, material, texture;
 var vertices =[], originalvertices = [];
+var textures = [];
 var offset1, offset2, offset3;
 var ambient = 0x000000, 
 	diffuse = 0x000000, 
@@ -30,6 +31,7 @@ var uniforms;
 var vs, fs;
 var texture1, texture2, texture3, texture4;
 var canvas;
+var previous = 0;
 
 //--------------------- helper methods ----------------------//
 var map = function(value, istart, istop, ostart, ostop) {
@@ -52,11 +54,11 @@ function setup() {
     scene = new THREE.Scene();
 
 	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
-	camera.position.z = 400;
+	camera.position.z = 600;
 
 	controls = new THREE.OrbitControls(camera);
 	controls.minDistance = 200;
-	controls.maxDistance = 700;
+	controls.maxDistance = 900;
 	controls.noKeys = true;
 	controls.maxPolarAngle = 2.2;
 	controls.minPolarAngle = 0.8;
@@ -97,6 +99,7 @@ function setup() {
     texture2 = new THREE.ImageUtils.loadTexture('images/senoghte.png');
     texture3 = new THREE.ImageUtils.loadTexture('images/sedand.png');
     texture4 = new THREE.ImageUtils.loadTexture('images/saboon.png');
+    textures.push(texture1,texture2,texture3,texture4);
 
     var shader = THREE.ShaderLib.normalmap;
 	uniforms = THREE.UniformsUtils.clone(shader.uniforms);
@@ -194,9 +197,21 @@ function setupListeners(){
 		camera.updateProjectionMatrix();	
 	}, false);
 
-//    document.getElementById('main').addEventListener('click', function(){
-//        change(texture2);
-//    }, false);
+    document.getElementById('main').addEventListener('dblclick', function(){
+        var random = generateRandom(previous);
+        console.log(random);
+        previous = random;
+        change(textures[random]);
+    }, false);
+}
+
+function generateRandom(prev){
+    var randNumber = 0;
+    do {
+        var num = Math.floor(Math.random() * 4);
+        randNumber = num;
+    } while (randNumber == prev);
+    return randNumber;
 }
 
 function loadAudio(){

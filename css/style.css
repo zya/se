@@ -12,15 +12,21 @@ html,body{
     font-family: "RobotoDraft",Helvetica,Arial,sans-serif;
     position: fixed;
     width: 100%;
-    bottom: 2%;
-    display: flex;
+    bottom: 10px;
+    /*display: flex;*/
+    color: white;
+    text-align: center;
+    margin: auto;
 }
 
 #name {
-    font-size: 15px;
+    font-size: 13px;
     color: white;
-    font-weight: 500;
+    font-weight: 300;
     margin:10px;
     padding:0;
+}
 
+.fa{
+    color: white;
 }
