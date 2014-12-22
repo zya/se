@@ -11,9 +11,12 @@ html,body{
 #controls {
     font-family: "RobotoDraft",Helvetica,Arial,sans-serif;
     position: fixed;
-    width: 100%;
+    width: 50%;
+    left:10%;
+    right: 10%;
+    height: 20%;
     bottom: 10px;
-    /*display: flex;*/
+    display: flex;
     color: white;
     text-align: center;
     margin: auto;
@@ -29,4 +32,28 @@ html,body{
 
 .fa{
     color: white;
+}
+
+.icon{
+    position: absolute;
+    bottom: 20px;
+    margin-left: -20px;
+}
+
+.fa-circle{
+    color: dimgrey;
+}
+
+.expand{
+    left: 100px;
+    color: red;
+}
+.expandcircle{
+    left: 50px;
+}
+
+.camera{
+    color: black;
+    bottom: 36px;
+    margin-left: -8px;
 }
