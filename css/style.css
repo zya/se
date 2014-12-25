@@ -7,13 +7,17 @@ html,body{
     overflow: hidden;
     text-align: center;
 }
-
-#controls {
-    font-family: "RobotoDraft",Helvetica,Arial,sans-serif;
+#container {
     position: fixed;
-    width: 100%;
+    display: flex;
+    bottom: 0;
+}
+#controls {
+    position: fixed;
+    /*width: 100%;*/
     bottom: 10px;
-    /*display: flex;*/
+    right: 10px;
+    display: flex;
     color: white;
     text-align: center;
     margin: auto;
@@ -21,12 +25,31 @@ html,body{
 
 #name {
     font-size: 13px;
-    color: white;
+    font-family: "RobotoDraft",Helvetica,Arial,sans-serif;
+    color: dimgrey;
     font-weight: 300;
     margin:10px;
     padding:0;
+    letter-spacing: 1px;
 }
 
 .fa{
+    color: dimgray;
+}
+.fa:hover{
+    color: white;
+    cursor: pointer;
+}
+.icon{
+    margin-right: 10px;
+}
+
+a{
+    text-decoration: none;
+    color: dimgray;
+
+}
+
+a:hover {
     color: white;
 }
