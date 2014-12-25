@@ -293,8 +293,8 @@ function draw() {
 }
 
 window.onload = function() {
-	setup();
-	setupListeners();
     loadAudio();
+    setup();
+	setupListeners();
 	draw();
 };
