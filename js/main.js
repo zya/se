@@ -7,15 +7,20 @@ analyser.smoothingTimeConstant = 0.7;
 var filter = context.createBiquadFilter();
 filter.type = 'highpass';
 filter.frequency.value = 5000;
-var audiosource = context.createBufferSource();
-audiosource.connect(filter);
 filter.connect(analyser);
-//audiosource.connect(context.destination);
 var frequencyData = new Uint8Array(analyser.frequencyBinCount);
 var isloaded = false;
+var isPlaying = false;
+
+var dummyOsc = context.createOscillator();
+var dummyGain = context.createGain();
+dummyOsc.connect(dummyGain);
 
 //audio files
 var audioElements = [];
+var currentAudio = null;
+var sc_client_id = '?client_id=c625af85886c1a833e8fe3d740af753c';
+
 //--------------------- three global vars ----------------------//
 var renderer, scene, camera, controls;
 var mesh = new THREE.Mesh(), geometry, material;
@@ -79,7 +84,6 @@ function setup() {
 
 	var manager = new THREE.LoadingManager();
 	var loader = new THREE.XHRLoader(manager);
-    var audioLoader = new THREE.XHRLoader(manager);
 
 	loader.load('shaders/vs.glsl', function(e){
 		vs = e;
@@ -89,13 +93,6 @@ function setup() {
 		fs = e;
 	});
 
-    audioLoader.setResponseType("arraybuffer");
-    audioLoader.load("audio/1.mp3",function(e){
-        context.decodeAudioData(e, function(buffer){
-           audiosource.buffer = buffer;
-           audiosource.start(0);
-        });
-    });
 
 	texture1 = new THREE.ImageUtils.loadTexture('images/32.png');
     texture2 = new THREE.ImageUtils.loadTexture('images/senoghte.png');
@@ -243,6 +240,25 @@ function setupListeners(){
             document.getElementById('help').style.display = 'none';
         }
     }, false);
+    var z = 0;
+    document.getElementById('main').addEventListener('touchstart', function(){
+        if(z === 0){
+            dummyOsc.start(0);
+            z = 1;
+        }
+    }, false);
+
+    document.getElementById('play').addEventListener('click', function(){
+        if(isPlaying){
+            currentAudio.pause();
+            this.className = "fa fa-play icon";
+            isPlaying = false;
+        }else{
+            currentAudio.play();
+            this.className = "fa fa-pause icon";
+            isPlaying = true;
+        }
+    }, false);
 
 }
 
@@ -262,23 +278,42 @@ function generateRandom(prev){
 }
 
 function loadAudio(){
-    var id = '?client_id=c625af85886c1a833e8fe3d740af753c'
     var iter = 0;
     var senoghte = new Audio();
-    senoghte.src = 'https://api.soundcloud.com/tracks/182234545/stream' + id;
+    senoghte.src = 'https://api.soundcloud.com/tracks/182234545/stream' + sc_client_id;
     var sedandeh = new Audio();
-    sedandeh.src = 'https://api.soundcloud.com/tracks/182234545/stream' + id;
+    sedandeh.src = 'https://api.soundcloud.com/tracks/182234545/stream' + sc_client_id;
     var saboon = new Audio();
-    saboon.src = 'https://api.soundcloud.com/tracks/182234545/stream' + id;
+    saboon.src = 'https://api.soundcloud.com/tracks/182234545/stream' + sc_client_id;
     audioElements.push(senoghte, sedandeh, saboon);
-    for(var i in audioElements){
+
+    for(var i=0 ; i < audioElements.length; i++){
         audioElements[i].addEventListener('canplaythrough', function(){
-            iter++
+            iter++;
             if(iter === 3){
                 console.log('Audio Files Can Play Through');
+                document.getElementById('loadingaudio').style.visibility = 'hidden';
+                document.getElementById('audiospin').style.visibility = 'hidden';
+                document.getElementById('play').className = "fa fa-pause icon";
+                playaudioelement(audioElements[0]);
+                isPlaying = true;
+                audioElements[0].addEventListener('ended', function(){
+                    playaudioelement(audioElements[1]);
+                },false);
+                audioElements[1].addEventListener('ended', function(){
+                    playaudioelement(audioElements[2]);
+                },false);
             }
         });
     }
+}
+
+function playaudioelement(audio){
+    var source = context.createMediaElementSource(audio);
+    source.connect(filter);
+    source.connect(context.destination);
+    audio.play();
+    currentAudio = audio;
 }
 
 //--------------------- draw ----------------------//
