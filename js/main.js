@@ -10,7 +10,7 @@ filter.frequency.value = 5000;
 var audiosource = context.createBufferSource();
 audiosource.connect(filter);
 filter.connect(analyser);
-audiosource.connect(context.destination);
+//audiosource.connect(context.destination);
 var frequencyData = new Uint8Array(analyser.frequencyBinCount);
 var isloaded = false;
 
@@ -18,7 +18,7 @@ var isloaded = false;
 var audioElements = [];
 //--------------------- three global vars ----------------------//
 var renderer, scene, camera, controls;
-var mesh = new THREE.Mesh(), geometry, material, texture;
+var mesh = new THREE.Mesh(), geometry, material;
 var vertices =[], originalvertices = [];
 var textures = [];
 var offset1, offset2, offset3;
@@ -44,19 +44,18 @@ function setup() {
 
     var canvas = document.createElement('canvas');
     canvas.setAttribute('id', 'main');
-    document.body.appendChild(canvas);
+    document.getElementById('full').appendChild(canvas);
     renderer = new THREE.WebGLRenderer({
         preserveDrawingBuffer: true,
         canvas: canvas,
         antialias: true
     });
     renderer.setClearColor(new THREE.Color('black'), 1);
-    var s = window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight;
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     scene = new THREE.Scene();
 
-	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 3000);
 	camera.position.z = 600;
 
 	controls = new THREE.OrbitControls(camera);
@@ -169,13 +168,13 @@ function updateVertices(){
         beat++;
         if( average > 20) {
             scale = average + 20;
-            if(beat % 110 === 0){
+            if(beat % 130 === 0){
                 changeRandomTexture();
                 if(scale > 50){
                     renderer.autoClear = false;
                     setTimeout(function(){
                         renderer.autoClear = true;
-                    },1200);
+                    },1300);
                 }
             }
             if(scale > threshold){
@@ -214,6 +213,34 @@ function setupListeners(){
 	}, false);
 
     document.getElementById('main').addEventListener('dblclick',changeRandomTexture, false);
+
+    document.getElementById('fullscreen').addEventListener('click', function(){
+        document.getElementById('full').webkitRequestFullscreen();
+    }, false);
+
+    document.getElementById('screenshot').addEventListener('click', screenshot, false);
+
+    document.getElementById('hide').addEventListener('click', function(){
+        document.getElementById('controls').style.display = 'none';
+        document.getElementById('name').style.display = 'none';
+        document.getElementById('show').style.display = 'block';
+    }, false);
+
+    document.getElementById('show').addEventListener('click', function(){
+        document.getElementById('controls').style.display = 'block';
+        document.getElementById('name').style.display = 'block';
+        document.getElementById('show').style.display = 'none';
+    }, false);
+
+    document.getElementById('question').addEventListener('click', function(){
+        var display = document.getElementById('help').style.display;
+        if(display === 'none'){
+            document.getElementById('help').style.display = 'block';
+        }else{
+            document.getElementById('help').style.display = 'none';
+        }
+    }, false);
+
 }
 
 function changeRandomTexture(){
@@ -259,7 +286,7 @@ function draw() {
     autoRotate();
 	uniforms[ "uDisplacementPostScale" ].value = scale;
     renderer.render(scene, camera);
-	requestAnimationFrame(draw);
+    requestAnimationFrame(draw);
 }
 
 window.onload = function() {

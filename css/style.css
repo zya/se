@@ -11,6 +11,7 @@ html,body{
     position: fixed;
     display: flex;
     bottom: 0;
+    text-align: center;
 }
 #controls {
     position: fixed;
@@ -33,6 +34,21 @@ html,body{
     letter-spacing: 1px;
 }
 
+#help {
+    font-size: 12px;
+    font-family: "RobotoDraft",Helvetica,Arial,sans-serif;
+    color: dimgrey;
+    font-weight: 300;
+    margin:10px;
+    padding:0;
+    letter-spacing: 1px;
+    position: fixed;
+    bottom: 30px;
+    right: 10px;
+    text-align: right;
+    display: none;
+}
+
 .fa{
     color: dimgray;
 }
@@ -47,9 +63,15 @@ html,body{
 a{
     text-decoration: none;
     color: dimgray;
-
 }
 
 a:hover {
     color: white;
+}
+
+#show {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    display: none;
 }
