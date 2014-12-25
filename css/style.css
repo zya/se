@@ -75,3 +75,17 @@ a:hover {
     bottom: 10px;
     display: none;
 }
+
+.spin{
+    position: fixed;
+    top: 45%;
+}
+
+.spin:hover{
+    color: dimgray;
+    cursor: auto;
+}
+
+#full{
+    visibility: hidden;
+}

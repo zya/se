@@ -139,6 +139,9 @@ function setup() {
 
         isloaded = true;
 		scene.add(mesh);
+
+        document.getElementById('spinner').style.visibility = 'hidden';
+        document.getElementById('full').style.visibility = 'visible';
 	};
 }
 //--------------------- drawing methods ----------------------//
