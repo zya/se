@@ -26,12 +26,6 @@ function setUpAudio(){
     dummyGain = context.createGain();
     dummyOsc.connect(dummyGain);
 }
-//bowser
-if (bowser.firefox || bowser.safari) {
-    console.log('its firefox or safari');
-} else if (bowser.ios){
-    console.log('its ios');
-}
 
 //--------------------- three global vars ----------------------//
 var renderer, scene, camera, controls;
@@ -251,14 +245,16 @@ function setupListeners(){
 
     document.getElementById('main').addEventListener('dblclick',changeRandomTexture, false);
 
-    document.getElementById('fullscreen').addEventListener('click', function(){
-        if(bowser.firefox){
-            var element = document.getElementById('full');
-            element.mozRequestFullScreen();
-        } else {
-            document.getElementById('full').webkitRequestFullscreen();
-        }
-    }, false);
+    if (!bowser.ios) {
+        document.getElementById('fullscreen').addEventListener('click', function(){
+            if(bowser.firefox){
+                var element = document.getElementById('full');
+                element.mozRequestFullScreen();
+            } else {
+                document.getElementById('full').webkitRequestFullscreen();
+            }
+        }, false);
+    }
 
     document.getElementById('screenshot').addEventListener('click', screenshot, false);
 
@@ -376,13 +372,13 @@ window.onload = function() {
     if (webgl && context !== 'undefined') {
         if(bowser.webkit){
             loadAudioWebkit();
+            if (bowser.ios) {
+                var parent = document.getElementById('controls');
+                var element = document.getElementById('fullscreen');
+                parent.removeChild(element);
+            }
         } else if (bowser.firefox) {
 
-        } else if (bowser.ios) {
-            var parent = document.getElementById('controls');
-            var element = document.getElementById('fullscreen');
-            console.log(parent);
-            element.style.css.visibility = 'hidden';
         }
         setup();
         setupListeners();
