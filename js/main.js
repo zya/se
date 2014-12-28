@@ -243,7 +243,9 @@ function setupListeners(){
     var z = 0;
     document.getElementById('main').addEventListener('touchstart', function(){
         if(z === 0){
-            dummyOsc.start(0);
+            console.log('dummy started');
+            var now = context.currentTime;
+            dummyOsc.start(now);
             z = 1;
         }
     }, false);
@@ -280,11 +282,13 @@ function generateRandom(prev){
 function loadAudio(){
     var iter = 0;
     var senoghte = new Audio();
-    senoghte.src = 'https://api.soundcloud.com/tracks/182234545/stream' + sc_client_id;
+    senoghte.src = 'audio/1.mp3';
+    senoghte.controls = true;
+    document.body.appendChild(senoghte);
     var sedandeh = new Audio();
-    sedandeh.src = 'https://api.soundcloud.com/tracks/182234545/stream' + sc_client_id;
+    sedandeh.src = 'audio/1.mp3';
     var saboon = new Audio();
-    saboon.src = 'https://api.soundcloud.com/tracks/182234545/stream' + sc_client_id;
+    saboon.src = 'audio/1.mp3';
     audioElements.push(senoghte, sedandeh, saboon);
 
     for(var i=0 ; i < audioElements.length; i++){
@@ -294,7 +298,7 @@ function loadAudio(){
                 console.log('Audio Files Can Play Through');
                 document.getElementById('loadingaudio').style.visibility = 'hidden';
                 document.getElementById('audiospin').style.visibility = 'hidden';
-                document.getElementById('play').className = "fa fa-pause icon";
+//                document.getElementById('play').className = "fa fa-pause icon";
                 playaudioelement(audioElements[0]);
                 isPlaying = true;
                 audioElements[0].addEventListener('ended', function(){
@@ -311,8 +315,9 @@ function loadAudio(){
 function playaudioelement(audio){
     var source = context.createMediaElementSource(audio);
     source.connect(filter);
+    source.connect(analyser);
     source.connect(context.destination);
-    audio.play();
+//    audio.play();
     currentAudio = audio;
 }
 
