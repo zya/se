@@ -1,5 +1,5 @@
 #extension GL_OES_standard_derivatives : enable
-
+precision highp sampler2D;
 uniform vec3 uPointLightPos;
 
 uniform vec3 uAmbientLightColor;

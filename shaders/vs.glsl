@@ -1,4 +1,6 @@
-attribute vec4 tangent; 
+precision highp sampler2D;
+
+attribute vec4 tangent;
 attribute float amplitude;
 attribute float displacement;
 
