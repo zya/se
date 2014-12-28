@@ -1,25 +1,37 @@
 //--------------------- audio global vars ----------------------//
 window.AudioContext = (window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext);
+var webgl = webgl_detect();
 var context = new AudioContext();
-var analyser = context.createAnalyser();
-analyser.fftSize = 2048;
-analyser.smoothingTimeConstant = 0.7;
-var filter = context.createBiquadFilter();
-filter.type = 'highpass';
-filter.frequency.value = 5000;
-filter.connect(analyser);
+if(context !== 'undefined'){
+    console.log('setting up audio');
+    setUpAudio();
+}
 var frequencyData = new Uint8Array(analyser.frequencyBinCount);
 var isloaded = false;
 var isPlaying = false;
-
-var dummyOsc = context.createOscillator();
-var dummyGain = context.createGain();
-dummyOsc.connect(dummyGain);
-
-//audio files
+var analyser, filter, dummyOsc, dummyGain;
 var audioElements = [];
 var currentAudio = null;
 var sc_client_id = '?client_id=c625af85886c1a833e8fe3d740af753c';
+function setUpAudio(){
+    analyser = context.createAnalyser();
+    analyser.fftSize = 2048;
+    analyser.smoothingTimeConstant = 0.7;
+    filter = context.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 5000;
+    filter.connect(analyser);
+    analyser.connect(context.destination);
+    dummyOsc = context.createOscillator();
+    dummyGain = context.createGain();
+    dummyOsc.connect(dummyGain);
+}
+//bowser
+if (bowser.firefox || bowser.safari) {
+    console.log('its firefox or safari');
+} else if (bowser.ios){
+    console.log('its ios');
+}
 
 //--------------------- three global vars ----------------------//
 var renderer, scene, camera, controls;
@@ -44,6 +56,31 @@ var threshold = 60;
 var map = function(value, istart, istop, ostart, ostop) {
 	return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 };
+function webgl_detect(return_context) {
+    if (!!window.WebGLRenderingContext) {
+        var canvas = document.createElement("canvas"),
+            names = ["webgl", "experimental-webgl", "moz-webgl", "webkit-3d"],
+            context = false;
+        for(var i=0;i<4;i++) {
+            try {
+                context = canvas.getContext(names[i]);
+                if (context && typeof context.getParameter == "function") {
+                    // WebGL is enabled
+                    if (return_context) {
+                        // return WebGL object if the function's argument is present
+                        return {name:names[i], gl:context};
+                    }
+                    // else, return just true
+                    return true;
+                }
+            } catch(e) {}
+        }
+        // WebGL is supported, but disabled
+        return false;
+    }
+    // WebGL not supported
+    return false;
+}
 //--------------------- setup ----------------------//
 function setup() {
 
@@ -215,7 +252,12 @@ function setupListeners(){
     document.getElementById('main').addEventListener('dblclick',changeRandomTexture, false);
 
     document.getElementById('fullscreen').addEventListener('click', function(){
-        document.getElementById('full').webkitRequestFullscreen();
+        if(bowser.firefox){
+            var element = document.getElementById('full');
+            element.mozRequestFullScreen();
+        } else {
+            document.getElementById('full').webkitRequestFullscreen();
+        }
     }, false);
 
     document.getElementById('screenshot').addEventListener('click', screenshot, false);
@@ -243,9 +285,7 @@ function setupListeners(){
     var z = 0;
     document.getElementById('main').addEventListener('touchstart', function(){
         if(z === 0){
-            console.log('dummy started');
-            var now = context.currentTime;
-            dummyOsc.start(now);
+            dummyOsc.start(0);
             z = 1;
         }
     }, false);
@@ -279,16 +319,14 @@ function generateRandom(prev){
     return randNumber;
 }
 
-function loadAudio(){
+function loadAudioWebkit(){
     var iter = 0;
     var senoghte = new Audio();
     senoghte.src = 'audio/1.mp3';
-    senoghte.controls = true;
-    document.body.appendChild(senoghte);
     var sedandeh = new Audio();
-    sedandeh.src = 'audio/1.mp3';
+    sedandeh.src = 'https://api.soundcloud.com/tracks/182234545/stream' + sc_client_id;
     var saboon = new Audio();
-    saboon.src = 'audio/1.mp3';
+    saboon.src = 'https://api.soundcloud.com/tracks/182234545/stream' + sc_client_id;
     audioElements.push(senoghte, sedandeh, saboon);
 
     for(var i=0 ; i < audioElements.length; i++){
@@ -298,7 +336,9 @@ function loadAudio(){
                 console.log('Audio Files Can Play Through');
                 document.getElementById('loadingaudio').style.visibility = 'hidden';
                 document.getElementById('audiospin').style.visibility = 'hidden';
-//                document.getElementById('play').className = "fa fa-pause icon";
+                document.getElementById('play').className = "fa fa-pause icon";
+                var source = context.createMediaElementSource(new Audio);
+                console.log(source.mediaElement);
                 playaudioelement(audioElements[0]);
                 isPlaying = true;
                 audioElements[0].addEventListener('ended', function(){
@@ -315,9 +355,8 @@ function loadAudio(){
 function playaudioelement(audio){
     var source = context.createMediaElementSource(audio);
     source.connect(filter);
-    source.connect(analyser);
     source.connect(context.destination);
-//    audio.play();
+    audio.play();
     currentAudio = audio;
 }
 
@@ -333,8 +372,22 @@ function draw() {
 }
 
 window.onload = function() {
-    loadAudio();
-    setup();
-	setupListeners();
-	draw();
+
+    if (webgl && context !== 'undefined') {
+        if(bowser.webkit){
+            loadAudioWebkit();
+        } else if (bowser.firefox) {
+
+        } else if (bowser.ios) {
+            var parent = document.getElementById('controls');
+            var element = document.getElementById('fullscreen');
+            console.log(parent);
+            element.style.css.visibility = 'hidden';
+        }
+        setup();
+        setupListeners();
+        draw();
+    } else {
+        //TODO
+    }
 };
