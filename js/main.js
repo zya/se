@@ -298,6 +298,11 @@ function setupListeners(){
         }
     }, false);
 
+    window.addEventListener('keydown', function(e){
+        if(e.keyCode === 83){
+            screenshot();
+        }
+    }, false);
 }
 
 function changeRandomTexture(){
