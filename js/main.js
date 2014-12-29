@@ -353,6 +353,25 @@ function loadAudioWebkit(){
     }
 }
 
+function loadAudioOther(){
+    var manager = new THREE.LoadingManager();
+    var loader = new THREE.XHRLoader();
+    loader.setResponseType("arraybuffer");
+    loader.load('audio/1.mp3', function(response){
+        context.decodeAudioData(response, function(buffer){
+            var source = context.createBufferSource();
+            source.buffer = buffer;
+            source.connect(filter);
+            source.connect(context.destination);
+            source.start(0);
+            document.getElementById('loadingaudio').style.visibility = 'hidden';
+            document.getElementById('audiospin').style.visibility = 'hidden';
+            document.getElementById('play').className = "fa fa-pause icon";
+        });
+    });
+
+}
+
 function playaudioelement(audio){
     var source = context.createMediaElementSource(audio);
     source.connect(filter);
@@ -383,7 +402,7 @@ window.onload = function() {
                 parent.removeChild(element);
             }
         } else if (bowser.firefox) {
-
+            loadAudioOther();
         }
         setup();
         setupListeners();
