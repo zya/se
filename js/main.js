@@ -272,10 +272,10 @@ function setupListeners(){
 
     document.getElementById('question').addEventListener('click', function(){
         var display = document.getElementById('help').style.display;
-        if(display === 'none'){
-            document.getElementById('help').style.display = 'block';
-        }else{
+        if(display === 'block'){
             document.getElementById('help').style.display = 'none';
+        }else{
+            document.getElementById('help').style.display = 'block';
         }
     }, false);
     var z = 0;
