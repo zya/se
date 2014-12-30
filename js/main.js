@@ -16,7 +16,6 @@ var startTime = 0;
 var pauseTime = 0;
 var currentAudio = null;
 var currentAudioIndex = 0;
-var sc_client_id = '?client_id=c625af85886c1a833e8fe3d740af753c';
 function setUpAudio(){
     analyser = context.createAnalyser();
     gain = context.createGain();
@@ -28,9 +27,6 @@ function setUpAudio(){
     filter.frequency.value = 5000;
     filter.connect(analyser);
     analyser.connect(context.destination);
-    dummyOsc = context.createOscillator();
-    dummyGain = context.createGain();
-    dummyOsc.connect(dummyGain);
 }
 
 
@@ -138,6 +134,9 @@ function setup() {
 	controls.autoRotate = false;
 	controls.autoRotateSpeed = 0.25;
 	controls.zoomSpeed = 0.15;
+    if(bowser.ios || bowser.android){
+        controls.zoomSpeed = 0.4;
+    }
 	controls.rotateUp(-0.2);
 	controls.rotateLeft(-0.05);
 
@@ -262,6 +261,7 @@ function screenshot(){
     renderer.render(scene, camera);
     var img = renderer.domElement.toDataURL('image/jpeg');
     link.href = img;
+    link.target = "_blank";
     link.download = 'se.jpg';
     link.click();
 }
@@ -315,12 +315,13 @@ function setupListeners(){
     }, false);
 
     var z = 0;
-    document.addEventListener('touchstart',function(){
+    document.getElementById('main').addEventListener('touchstart', function(){
         if(z === 0){
             console.log('osc');
-            dummyOsc.start(0);
-            dummyOsc.connect(gain);
-            dummyOsc.stop(0);
+            var osc = context.createOscillator();
+            osc.connect(context.destination);
+            osc.start(0);
+            osc.stop(0);
             z = 1;
         }
     }, false);
@@ -395,7 +396,6 @@ function loadAudioWebkit(){
                 document.getElementById('audiospin').className = 'fa fa-spinner fa-spin';
                 document.getElementById('play').className = "fa fa-pause icon";
                 var source = context.createMediaElementSource(new Audio);
-                console.log(source.mediaElement);
                 playaudioelement(audioElements[0]);
                 isPlaying = true;
                 audioElements[0].addEventListener('ended', function(){
@@ -444,7 +444,6 @@ function loadAudioOther(){
             }
             //load the second
             if(!bowser.ios){
-                console.log('going for it');
                 loader.load("audio/2.mp3", function(response){
                     context.decodeAudioData(response, function(buffer){
                         audioBuffers.push(buffer);
@@ -479,14 +478,6 @@ function loadAudioOther(){
     });
 }
 
-function playSound(buffer){
-    var source = context.createBufferSource();
-    source.buffer = buffer;
-    source.connect(filter);
-    source.connect(context.destination);
-    source.start(0);
-    sourceNodes.push(source);
-}
 
 function playaudioelement(audio){
     var source = context.createMediaElementSource(audio);
