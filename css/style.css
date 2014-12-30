@@ -97,3 +97,34 @@ a:hover {
     letter-spacing: 1px;
     margin-right: 10px;
 }
+
+@media (max-width: 500px) {
+    #container{
+        display: block;
+    }
+    #name{
+        position: fixed;
+        font-size: 11px;
+        bottom: 22px;
+        right: 10px;
+    }
+
+}
+
+@media (max-width: 400px){
+    #name {
+        margin: auto;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        max-width: 130px;
+        max-height: 20px;
+        display: none;
+    }
+    #descr{
+        visibility: hidden;
+    }
+    #descr2{
+        visibility: hidden;
+    }
+}
