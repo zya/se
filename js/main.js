@@ -107,7 +107,7 @@ function setup() {
 	controls.autoRotateSpeed = 0.25;
 	controls.zoomSpeed = 0.15;
 	controls.rotateUp(-0.2);
-	controls.rotateLeft(-0.2);
+	controls.rotateLeft(-0.05);
 
 	geometry = new THREE.PlaneBufferGeometry(200,200,90,90);
     geometry.dynamic = true;
@@ -199,7 +199,7 @@ function updateVertices(){
         beat++;
         if( average > 20) {
             scale = average + 20;
-            if(beat % 130 === 0){
+            if(beat % 180 === 0){
                 changeRandomTexture();
                 if(scale > 50){
                     renderer.autoClear = false;
@@ -225,9 +225,9 @@ function change(texture){
 function screenshot(){
     var link = document.getElementById('screen');
     renderer.render(scene, camera);
-    var img = renderer.domElement.toDataURL("se.png");
+    var img = renderer.domElement.toDataURL('image/jpeg');
     link.href = img;
-    link.download = 'se.png';
+    link.download = 'se.jpg';
     link.click();
 }
 //--------------------- event listeners ----------------------//
@@ -395,11 +395,12 @@ window.onload = function() {
 
     if (webgl && context !== 'undefined') {
         if(bowser.webkit){
-            loadAudioWebkit();
             if (bowser.ios) {
                 var parent = document.getElementById('controls');
                 var element = document.getElementById('fullscreen');
                 parent.removeChild(element);
+            } else {
+                loadAudioWebkit();
             }
         } else if (bowser.firefox) {
             loadAudioOther();
