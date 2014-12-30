@@ -82,17 +82,37 @@ function webgl_detect(return_context) {
     // WebGL not supported
     return false;
 }
+
+var mylatesttap;
+function doubletap() {
+    var now = new Date().getTime();
+    var timesince = now - mylatesttap;
+    if((timesince < 400) && (timesince > 0)){
+        changeRandomTexture();
+    }
+    mylatesttap = new Date().getTime();
+}
 //--------------------- setup ----------------------//
 function setup() {
 
     var canvas = document.createElement('canvas');
     canvas.setAttribute('id', 'main');
     document.getElementById('full').appendChild(canvas);
-    renderer = new THREE.WebGLRenderer({
-        preserveDrawingBuffer: true,
-        canvas: canvas,
-        antialias: true
-    });
+    var options;
+    if (bowser.ios || bowser.android) {
+        options = {
+            preserveDrawingBuffer: false,
+            canvas: canvas,
+            antialias: false
+        };
+    } else {
+        options = {
+            preserveDrawingBuffer: true,
+            canvas: canvas,
+            antialias: true
+        };
+    }
+    renderer = new THREE.WebGLRenderer(options);
     renderer.setClearColor(new THREE.Color('black'), 1);
     renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -208,12 +228,15 @@ function updateVertices(){
             scale = average + 20;
             if(beat % 180 === 0){
                 changeRandomTexture();
-                if(scale > 50){
-                    renderer.autoClear = false;
-                    setTimeout(function(){
-                        renderer.autoClear = true;
-                    },1300);
+                if(!bowser.ios || !bowser.android){
+                    if(scale > 50){
+                        renderer.autoClear = false;
+                        setTimeout(function(){
+                            renderer.autoClear = true;
+                        },1300);
+                    }
                 }
+
             }
             if(scale > threshold){
                 beat++;
@@ -285,10 +308,14 @@ function setupListeners(){
             document.getElementById('help').style.display = 'block';
         }
     }, false);
+
     var z = 0;
     document.getElementById('main').addEventListener('touchstart', function(){
+        doubletap();
         if(z === 0){
             dummyOsc.start(0);
+            dummyOsc.connect(context.destination);
+            dummyOsc.stop(0.2);
             z = 1;
         }
     }, false);
@@ -299,7 +326,7 @@ function setupListeners(){
         if(isPlaying){
             if(bowser.firefox || bowser.ios){
                 this.className = 'fa fa-volume-off icon';
-                gain.gain.value = 0.1;
+                gain.gain.value = 0.0;
             } else {
                 currentAudio.pause();
                 this.className = "fa fa-play icon";
@@ -345,9 +372,9 @@ function loadAudioWebkit(){
     var senoghte = new Audio();
     senoghte.src = 'audio/1.mp3';
     var sedandeh = new Audio();
-    sedandeh.src = 'https://api.soundcloud.com/tracks/182234545/stream' + sc_client_id;
+    sedandeh.src = 'audio/2.mp3';
     var saboon = new Audio();
-    saboon.src = 'https://api.soundcloud.com/tracks/182234545/stream' + sc_client_id;
+    saboon.src = 'audio/3.mp3';
     audioElements.push(senoghte, sedandeh, saboon);
 
     for(var i=0 ; i < audioElements.length; i++){
