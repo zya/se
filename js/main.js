@@ -8,15 +8,19 @@ if(context !== 'undefined'){
 var frequencyData = new Uint8Array(analyser.frequencyBinCount);
 var isloaded = false;
 var isPlaying = false;
-var analyser, filter, dummyOsc, dummyGain;
+var analyser, filter, dummyOsc, dummyGain, gain;
 var audioElements = [];
 var audioBuffers = [];
 var sourceNodes = [];
 var startTime = 0;
+var pauseTime = 0;
 var currentAudio = null;
+var currentAudioIndex = 0;
 var sc_client_id = '?client_id=c625af85886c1a833e8fe3d740af753c';
 function setUpAudio(){
     analyser = context.createAnalyser();
+    gain = context.createGain();
+    gain.connect(context.destination);
     analyser.fftSize = 2048;
     analyser.smoothingTimeConstant = 0.7;
     filter = context.createBiquadFilter();
@@ -288,15 +292,28 @@ function setupListeners(){
             z = 1;
         }
     }, false);
-
+    if(bowser.firefox || bowser.ios){
+        document.getElementById('play').className = 'fa fa-volume-off icon';
+    }
     document.getElementById('play').addEventListener('click', function(){
         if(isPlaying){
-            currentAudio.pause();
-            this.className = "fa fa-play icon";
+            if(bowser.firefox || bowser.ios){
+                this.className = 'fa fa-volume-off icon';
+                gain.gain.value = 0.1;
+            } else {
+                currentAudio.pause();
+                this.className = "fa fa-play icon";
+            }
             isPlaying = false;
         }else{
-            currentAudio.play();
-            this.className = "fa fa-pause icon";
+            if(bowser.firefox || bowser.ios) {
+                gain.gain.value = 1;
+                this.className = 'fa fa-volume-up icon';
+            } else {
+                currentAudio.play();
+                this.className = "fa fa-pause icon";
+            }
+
             isPlaying = true;
         }
     }, false);
@@ -367,18 +384,26 @@ function loadAudioOther(){
             sourceNodes.push(source);
             source.buffer = buffer;
             source.connect(filter);
-            source.connect(context.destination);
+            source.connect(gain);
             source.start(0);
+            startTime = context.currentTime;
             isPlaying = true;
             currentAudio = sourceNodes[0];
+            currentAudioIndex = 0;
+
             source.onended = function(){
                 isPlaying = true;
                 sourceNodes[1].start(0);
+                startTime = context.currentTime;
                 currentAudio = sourceNodes[1];
+                currentAudioIndex = 1;
             };
             document.getElementById('loadingaudio').style.visibility = 'hidden';
             document.getElementById('audiospin').style.visibility = 'hidden';
             document.getElementById('play').className = "fa fa-pause icon";
+            if(bowser.firefox || bowser.ios) {
+                document.getElementById('play').className = "fa fa-volume-up icon";
+            }
             //load the second
             loader.load("audio/2.mp3", function(response){
                 context.decodeAudioData(response, function(buffer){
@@ -387,11 +412,13 @@ function loadAudioOther(){
                     sourceNodes.push(source);
                     source.buffer = buffer;
                     source.connect(filter);
-                    source.connect(context.destination);
+                    source.connect(gain);
                     source.onended = function(){
                         isPlaying = true;
+                        startTime = context.currentTime;
                         sourceNodes[2].start(0);
                         currentAudio = sourceNodes[2];
+                        currentAudioIndex = 2;
                     };
 
                     //load the thrid one
@@ -402,7 +429,7 @@ function loadAudioOther(){
                             sourceNodes.push(source);
                             source.buffer = buffer;
                             source.connect(filter);
-                            source.connect(context.destination);
+                            source.connect(gain);
                         });
                      });
                 });
