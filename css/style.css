@@ -108,6 +108,10 @@ a:hover {
         bottom: 22px;
         right: 10px;
     }
+    #help{
+        bottom: 50px;
+        font-size: 11px;
+    }
 
 }
 
@@ -126,5 +130,10 @@ a:hover {
     }
     #descr2{
         visibility: hidden;
+    }
+
+    #help{
+        bottom: 35px;
+        font-size: 11px;
     }
 }
