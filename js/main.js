@@ -196,6 +196,8 @@ function setup() {
 		scene.add(mesh);
 
         document.getElementById('spinner').style.visibility = 'hidden';
+        document.getElementById('spinner').className = 'fa fa-spinner fa-spin fa-2x';
+
         document.getElementById('full').style.visibility = 'visible';
 	};
 }
@@ -311,11 +313,12 @@ function setupListeners(){
 
     var z = 0;
     document.getElementById('main').addEventListener('touchstart', function(){
+        gain.gain.value = 1;
         doubletap();
         if(z === 0){
             dummyOsc.start(0);
             dummyOsc.connect(context.destination);
-            dummyOsc.stop(0.2);
+//            dummyOsc.stop(0.001);
             z = 1;
         }
     }, false);
@@ -384,6 +387,7 @@ function loadAudioWebkit(){
                 console.log('Audio Files Can Play Through');
                 document.getElementById('loadingaudio').style.visibility = 'hidden';
                 document.getElementById('audiospin').style.visibility = 'hidden';
+                document.getElementById('audiospin').className = 'fa fa-spinner fa-spin';
                 document.getElementById('play').className = "fa fa-pause icon";
                 var source = context.createMediaElementSource(new Audio);
                 console.log(source.mediaElement);
