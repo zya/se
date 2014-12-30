@@ -3,7 +3,6 @@ window.AudioContext = (window.AudioContext || window.webkitAudioContext || windo
 var webgl = webgl_detect();
 var context = new AudioContext();
 if(context !== 'undefined'){
-    console.log('setting up audio');
     setUpAudio();
 }
 var frequencyData = new Uint8Array(analyser.frequencyBinCount);
@@ -11,6 +10,9 @@ var isloaded = false;
 var isPlaying = false;
 var analyser, filter, dummyOsc, dummyGain;
 var audioElements = [];
+var audioBuffers = [];
+var sourceNodes = [];
+var startTime = 0;
 var currentAudio = null;
 var sc_client_id = '?client_id=c625af85886c1a833e8fe3d740af753c';
 function setUpAudio(){
@@ -26,6 +28,7 @@ function setUpAudio(){
     dummyGain = context.createGain();
     dummyOsc.connect(dummyGain);
 }
+
 
 //--------------------- three global vars ----------------------//
 var renderer, scene, camera, controls;
@@ -359,17 +362,62 @@ function loadAudioOther(){
     loader.setResponseType("arraybuffer");
     loader.load('audio/1.mp3', function(response){
         context.decodeAudioData(response, function(buffer){
+            audioBuffers.push(buffer);
             var source = context.createBufferSource();
+            sourceNodes.push(source);
             source.buffer = buffer;
             source.connect(filter);
             source.connect(context.destination);
             source.start(0);
+            isPlaying = true;
+            currentAudio = sourceNodes[0];
+            source.onended = function(){
+                isPlaying = true;
+                sourceNodes[1].start(0);
+                currentAudio = sourceNodes[1];
+            };
             document.getElementById('loadingaudio').style.visibility = 'hidden';
             document.getElementById('audiospin').style.visibility = 'hidden';
             document.getElementById('play').className = "fa fa-pause icon";
+            //load the second
+            loader.load("audio/2.mp3", function(response){
+                context.decodeAudioData(response, function(buffer){
+                    audioBuffers.push(buffer);
+                    var source = context.createBufferSource();
+                    sourceNodes.push(source);
+                    source.buffer = buffer;
+                    source.connect(filter);
+                    source.connect(context.destination);
+                    source.onended = function(){
+                        isPlaying = true;
+                        sourceNodes[2].start(0);
+                        currentAudio = sourceNodes[2];
+                    };
+
+                    //load the thrid one
+                    loader.load("audio/3.mp3", function(response){
+                        context.decodeAudioData(response, function(buffer){
+                            audioBuffers.push(buffer);
+                            var source = context.createBufferSource();
+                            sourceNodes.push(source);
+                            source.buffer = buffer;
+                            source.connect(filter);
+                            source.connect(context.destination);
+                        });
+                     });
+                });
+            });
         });
     });
+}
 
+function playSound(buffer){
+    var source = context.createBufferSource();
+    source.buffer = buffer;
+    source.connect(filter);
+    source.connect(context.destination);
+    source.start(0);
+    sourceNodes.push(source);
 }
 
 function playaudioelement(audio){
@@ -399,6 +447,7 @@ window.onload = function() {
                 var parent = document.getElementById('controls');
                 var element = document.getElementById('fullscreen');
                 parent.removeChild(element);
+                loadAudioOther();
             } else {
                 loadAudioWebkit();
             }
