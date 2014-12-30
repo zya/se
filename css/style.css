@@ -23,7 +23,10 @@ html,body{
     text-align: center;
     margin: auto;
 }
-
+#main{
+    width: 100%;
+    height: 100%;
+}
 #name {
     font-size: 13px;
     font-family: "RobotoDraft",Helvetica,Arial,sans-serif;

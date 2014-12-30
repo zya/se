@@ -105,6 +105,11 @@ function setup() {
             canvas: canvas,
             antialias: false
         };
+
+        //for mobile use smaller analysis
+        analyser.fftSize = 1024;
+        frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
     } else {
         options = {
             preserveDrawingBuffer: true,
@@ -194,10 +199,8 @@ function setup() {
 
         isloaded = true;
 		scene.add(mesh);
-
-        document.getElementById('spinner').style.visibility = 'hidden';
-        document.getElementById('spinner').className = 'fa fa-spinner fa-spin fa-2x';
-
+        var element = document.getElementById('spinner');
+        document.body.removeChild(element);
         document.getElementById('full').style.visibility = 'visible';
 	};
 }
@@ -312,15 +315,17 @@ function setupListeners(){
     }, false);
 
     var z = 0;
-    document.getElementById('main').addEventListener('touchstart', function(){
-        gain.gain.value = 1;
-        doubletap();
+    document.addEventListener('touchstart',function(){
         if(z === 0){
+            console.log('osc');
             dummyOsc.start(0);
-            dummyOsc.connect(context.destination);
-//            dummyOsc.stop(0.001);
+            dummyOsc.connect(gain);
+            dummyOsc.stop(0);
             z = 1;
         }
+    }, false);
+    document.getElementById('main').addEventListener('touchstart', function(){
+        doubletap();
     }, false);
     if(bowser.firefox || bowser.ios){
         document.getElementById('play').className = 'fa fa-volume-off icon';
@@ -424,10 +429,12 @@ function loadAudioOther(){
 
             source.onended = function(){
                 isPlaying = true;
-                sourceNodes[1].start(0);
-                startTime = context.currentTime;
-                currentAudio = sourceNodes[1];
-                currentAudioIndex = 1;
+                if(!bowser.ios){
+                    sourceNodes[1].start(0);
+                    startTime = context.currentTime;
+                    currentAudio = sourceNodes[1];
+                    currentAudioIndex = 1;
+                }
             };
             document.getElementById('loadingaudio').style.visibility = 'hidden';
             document.getElementById('audiospin').style.visibility = 'hidden';
@@ -436,35 +443,38 @@ function loadAudioOther(){
                 document.getElementById('play').className = "fa fa-volume-up icon";
             }
             //load the second
-            loader.load("audio/2.mp3", function(response){
-                context.decodeAudioData(response, function(buffer){
-                    audioBuffers.push(buffer);
-                    var source = context.createBufferSource();
-                    sourceNodes.push(source);
-                    source.buffer = buffer;
-                    source.connect(filter);
-                    source.connect(gain);
-                    source.onended = function(){
-                        isPlaying = true;
-                        startTime = context.currentTime;
-                        sourceNodes[2].start(0);
-                        currentAudio = sourceNodes[2];
-                        currentAudioIndex = 2;
-                    };
+            if(!bowser.ios){
+                console.log('going for it');
+                loader.load("audio/2.mp3", function(response){
+                    context.decodeAudioData(response, function(buffer){
+                        audioBuffers.push(buffer);
+                        var source = context.createBufferSource();
+                        sourceNodes.push(source);
+                        source.buffer = buffer;
+                        source.connect(filter);
+                        source.connect(gain);
+                        source.onended = function(){
+                            isPlaying = true;
+                            startTime = context.currentTime;
+                            sourceNodes[2].start(0);
+                            currentAudio = sourceNodes[2];
+                            currentAudioIndex = 2;
+                        };
 
-                    //load the thrid one
-                    loader.load("audio/3.mp3", function(response){
-                        context.decodeAudioData(response, function(buffer){
-                            audioBuffers.push(buffer);
-                            var source = context.createBufferSource();
-                            sourceNodes.push(source);
-                            source.buffer = buffer;
-                            source.connect(filter);
-                            source.connect(gain);
+                        //load the thrid one
+                        loader.load("audio/3.mp3", function(response){
+                            context.decodeAudioData(response, function(buffer){
+                                audioBuffers.push(buffer);
+                                var source = context.createBufferSource();
+                                sourceNodes.push(source);
+                                source.buffer = buffer;
+                                source.connect(filter);
+                                source.connect(gain);
+                            });
                         });
-                     });
+                    });
                 });
-            });
+            }
         });
     });
 }
@@ -489,7 +499,7 @@ function playaudioelement(audio){
 //--------------------- draw ----------------------//
 function draw() {
 	analyseAudio();
-	updateVertices();
+	isPlaying ? updateVertices() :
 	controls.update();
     autoRotate();
 	uniforms[ "uDisplacementPostScale" ].value = scale;
