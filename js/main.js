@@ -344,8 +344,10 @@ function setupListeners(){
         }else{
             if(bowser.firefox || bowser.ios) {
                 gain.gain.value = 1;
+                document.getElementById('soundcloud').style.visibility = 'hidden';
                 this.className = 'fa fa-volume-up icon';
             } else {
+                document.getElementById('soundcloud').style.visibility = 'hidden';
                 currentAudio.play();
                 this.className = "fa fa-pause icon";
             }
@@ -403,6 +405,14 @@ function loadAudioWebkit(){
                 },false);
                 audioElements[1].addEventListener('ended', function(){
                     playaudioelement(audioElements[2]);
+                },false);
+                audioElements[2].addEventListener('ended', function(){
+                    isPlaying = false;
+                    document.getElementById('soundcloud').style.visibility = 'visible';
+                    console.log(document.getElementById('play').className);
+                    document.getElementById('play').className = "fa fa-play icon";
+                    console.log(document.getElementById('play').className);
+                    currentAudio = audioElements[0];
                 },false);
             }
         });
@@ -469,6 +479,10 @@ function loadAudioOther(){
                                 source.buffer = buffer;
                                 source.connect(filter);
                                 source.connect(gain);
+                                source.onended = function(){
+                                    isPlaying = false;
+                                    document.getElementById('soundcloud').style.visibility = 'visible';
+                                };
                             });
                         });
                     });
@@ -517,6 +531,7 @@ window.onload = function() {
         setupListeners();
         draw();
     } else {
-        //TODO
+        document.getElementById('soundcloud').style.visibility = 'visible';
+        document.getElementById('notsupported').style.visibility = 'visible';
     }
 };

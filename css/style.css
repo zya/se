@@ -37,6 +37,16 @@ html,body{
     letter-spacing: 1px;
 }
 
+#notsupported{
+    font-size: 13px;
+    font-family: "RobotoDraft",Helvetica,Arial,sans-serif;
+    color: lightgrey;
+    font-weight: 300;
+    padding:0;
+    letter-spacing: 1px;
+    visibility: hidden;
+}
+
 #help {
     font-size: 12px;
     font-family: "RobotoDraft",Helvetica,Arial,sans-serif;
@@ -50,6 +60,13 @@ html,body{
     right: 10px;
     text-align: right;
     display: none;
+}
+
+#soundcloud{
+    position: fixed;
+    width:100%;
+    padding-top: 13%;
+    visibility: hidden;
 }
 
 .fa{
