@@ -230,7 +230,7 @@ function updateVertices(){
         beat++;
         if( average > 20) {
             scale = average + 20;
-            if(beat % 180 === 0){
+            if(beat % 150 === 0){
                 changeRandomTexture();
                 if(!bowser.ios || !bowser.android){
                     if(scale > 50){
@@ -262,7 +262,7 @@ function screenshot(){
     var img = renderer.domElement.toDataURL('image/jpeg');
     link.href = img;
     link.target = "_blank";
-    link.download = 'se.jpg';
+    link.download = "Mez'Rab - 3.jpg";
     link.click();
 }
 //--------------------- event listeners ----------------------//
