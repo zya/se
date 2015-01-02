@@ -5,19 +5,19 @@ var context = new AudioContext();
 if(context !== 'undefined'){
     setUpAudio();
 }
-var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+var frequencyData;
 var isloaded = false;
 var isPlaying = false;
-var analyser, filter, dummyOsc, dummyGain, gain;
+var analyser, filter, gain;
 var audioElements = [];
 var audioBuffers = [];
 var sourceNodes = [];
 var startTime = 0;
-var pauseTime = 0;
 var currentAudio = null;
 var currentAudioIndex = 0;
 function setUpAudio(){
     analyser = context.createAnalyser();
+    frequencyData = new Uint8Array(analyser.frequencyBinCount);
     gain = context.createGain();
     gain.connect(context.destination);
     analyser.fftSize = 2048;
@@ -381,11 +381,11 @@ function generateRandom(prev){
 function loadAudioWebkit(){
     var iter = 0;
     var senoghte = new Audio();
-    senoghte.src = 'audio/1.mp3';
+    senoghte.src = "audio/01.mp3";
     var sedandeh = new Audio();
-    sedandeh.src = 'audio/2.mp3';
+    sedandeh.src = "audio/02.mp3";
     var saboon = new Audio();
-    saboon.src = 'audio/3.mp3';
+    saboon.src = "audio/03.mp3";
     audioElements.push(senoghte, sedandeh, saboon);
 
     for(var i=0 ; i < audioElements.length; i++){
@@ -423,7 +423,7 @@ function loadAudioOther(){
     var manager = new THREE.LoadingManager();
     var loader = new THREE.XHRLoader();
     loader.setResponseType("arraybuffer");
-    loader.load('audio/1.mp3', function(response){
+    loader.load("audio/01.mp3", function(response){
         context.decodeAudioData(response, function(buffer){
             audioBuffers.push(buffer);
             var source = context.createBufferSource();
@@ -454,7 +454,7 @@ function loadAudioOther(){
             }
             //load the second
             if(!bowser.ios){
-                loader.load("audio/2.mp3", function(response){
+                loader.load("audio/02.mp3", function(response){
                     context.decodeAudioData(response, function(buffer){
                         audioBuffers.push(buffer);
                         var source = context.createBufferSource();
@@ -471,7 +471,7 @@ function loadAudioOther(){
                         };
 
                         //load the thrid one
-                        loader.load("audio/3.mp3", function(response){
+                        loader.load("audio/03.mp3", function(response){
                             context.decodeAudioData(response, function(buffer){
                                 audioBuffers.push(buffer);
                                 var source = context.createBufferSource();
