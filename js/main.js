@@ -382,10 +382,13 @@ function loadAudioWebkit(){
     var iter = 0;
     var senoghte = new Audio();
     senoghte.src = "audio/01.mp3";
+    senoghte.load();
     var sedandeh = new Audio();
     sedandeh.src = "audio/02.mp3";
+    sedandeh.load();
     var saboon = new Audio();
     saboon.src = "audio/03.mp3";
+    saboon.load();
     audioElements.push(senoghte, sedandeh, saboon);
 
     for(var i=0 ; i < audioElements.length; i++){
@@ -397,14 +400,17 @@ function loadAudioWebkit(){
                 document.getElementById('audiospin').style.visibility = 'hidden';
                 document.getElementById('audiospin').className = 'fa fa-spinner fa-spin';
                 document.getElementById('play').className = "fa fa-pause icon";
-                var source = context.createMediaElementSource(new Audio);
                 playaudioelement(audioElements[0]);
+                sedandeh.load();
                 isPlaying = true;
                 audioElements[0].addEventListener('ended', function(){
                     playaudioelement(audioElements[1]);
+                    saboon.load();
                 },false);
                 audioElements[1].addEventListener('ended', function(){
+                    saboon.load();
                     playaudioelement(audioElements[2]);
+                    senoghte.load();
                 },false);
                 audioElements[2].addEventListener('ended', function(){
                     isPlaying = false;
