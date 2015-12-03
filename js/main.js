@@ -513,6 +513,7 @@ function draw() {
 	analyseAudio();
 	isPlaying ? updateVertices() : false;
 	controls.update();
+    camera.updateProjectionMatrix();
     autoRotate();
 	uniforms[ "uDisplacementPostScale" ].value = scale;
     renderer.render(scene, camera);
