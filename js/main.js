@@ -119,7 +119,7 @@ function setup() {
 
     scene = new THREE.Scene();
 
-	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 3000);
+	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.00001, 8000);
 	camera.position.z = 600;
 
 	controls = new THREE.OrbitControls(camera);
@@ -488,6 +488,7 @@ function loadAudioOther(){
                                 source.onended = function(){
                                     isPlaying = false;
                                     document.getElementById('soundcloud').style.visibility = 'visible';
+                                    document.getElementById('soundcloud').style['z-index'] = 1000;
                                 };
                             });
                         });
@@ -510,7 +511,7 @@ function playaudioelement(audio){
 //--------------------- draw ----------------------//
 function draw() {
 	analyseAudio();
-	isPlaying ? updateVertices() :
+	isPlaying ? updateVertices() : false;
 	controls.update();
     autoRotate();
 	uniforms[ "uDisplacementPostScale" ].value = scale;
@@ -528,6 +529,9 @@ window.onload = function() {
                 parent.removeChild(element);
                 loadAudioOther();
             } else {
+                setTimeout(function(){
+                  document.getElementById('soundcloud').style['z-index'] = -2000;  
+                }, 100);
                 loadAudioWebkit();
             }
         } else if (bowser.firefox) {
@@ -538,6 +542,7 @@ window.onload = function() {
         draw();
     } else {
         document.getElementById('soundcloud').style.visibility = 'visible';
+        document.getElementById('soundcloud').style['z-index'] = 1000;
         document.getElementById('notsupported').style.visibility = 'visible';
     }
 };
